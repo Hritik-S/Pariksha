@@ -89,10 +89,7 @@ public class addQuizFXMLController implements Initializable {
             if(obj==null){
                 Notifications.create().darkStyle().text("Select Right Answer").position(Pos.CENTER).showError();
             }
-            else
-            {
-                //save
-            }
+
         }
 
     }
