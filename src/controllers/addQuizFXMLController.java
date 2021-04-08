@@ -72,8 +72,8 @@ public class addQuizFXMLController implements Initializable {
             quizTitle.setEditable(false);
         }
     }
-    @FXML
-    private void addNextQuestion(ActionEvent actionEvent) {
+
+    private boolean validateFields(){
         String qu=this.question.getText();
         String op1=this.option1.getText();
         String op2=this.option2.getText();
@@ -82,16 +82,27 @@ public class addQuizFXMLController implements Initializable {
         Toggle obj=radioGroup.getSelectedToggle();
         if(qu.trim().isEmpty() || op1.trim().isEmpty() || op2.trim().isEmpty() || op3.trim().isEmpty() || op4.trim().isEmpty()){
             Notifications.create().darkStyle().title("Question").text("Enter valid input").position(Pos.CENTER).showError();
+            return false;
         }
 
         else
         {
             if(obj==null){
                 Notifications.create().darkStyle().text("Select Right Answer").position(Pos.CENTER).showError();
+                return false;
+            }
+            else{
+                return true;
             }
 
         }
+    }
+    @FXML
+    private void addNextQuestion(ActionEvent actionEvent) {
+        boolean valid=validateFields();
+        if(valid){
 
+        }
     }
     @FXML
     private void submitQuiz(ActionEvent actionEvent) {
