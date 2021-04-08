@@ -1,9 +1,6 @@
 package models;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Quiz {
     private Integer quizId;
@@ -56,5 +53,26 @@ public class Quiz {
         PreparedStatement ps= connection.prepareStatement(query);
         boolean b=ps.execute();
         System.out.println(b);
+        connection.close();
+    }
+
+    public int save() throws ClassNotFoundException, SQLException {
+        String raw="Insert into %s (%s) values (?) ";
+        String query=String.format(raw,metaData.TABLE_NAME,metaData.TITLE);
+        String connectionUrl="jdbc:sqlite:Quiz.db";
+        Class.forName("org.sqlite.JDBC");
+        Connection connection= DriverManager.getConnection(connectionUrl);
+        PreparedStatement ps= connection.prepareStatement(query , Statement.RETURN_GENERATED_KEYS);
+        ps.setString(1,this.title);
+
+        int i=ps.executeUpdate();
+        ResultSet keys=ps.getGeneratedKeys();
+        if(keys.next()){
+            connection.close();
+            return keys.getInt(1);
+        }
+        connection.close();
+        return -1;
+
     }
 }

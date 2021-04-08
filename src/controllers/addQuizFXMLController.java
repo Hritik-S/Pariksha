@@ -11,11 +11,13 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import models.Quiz;
+import models.questions;
 import org.controlsfx.control.Notifications;
 
 import javax.management.Notification;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class addQuizFXMLController implements Initializable {
     @FXML
@@ -46,6 +48,11 @@ public class addQuizFXMLController implements Initializable {
     private JFXButton submitQuiz;
 
     private ToggleGroup radioGroup;
+
+    //my local variables
+
+    private Quiz quiz=null;
+    private ArrayList<models.questions> questions=new ArrayList<>();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         radioButtonSetup();
@@ -70,6 +77,7 @@ public class addQuizFXMLController implements Initializable {
         }
         else{
             quizTitle.setEditable(false);
+            this.quiz=new Quiz(title);
         }
     }
 
@@ -100,11 +108,51 @@ public class addQuizFXMLController implements Initializable {
     @FXML
     private void addNextQuestion(ActionEvent actionEvent) {
         boolean valid=validateFields();
+        models.questions question=new questions();
         if(valid){
+
+
+
+            question.setOption1(option1.getText().trim());
+            question.setOption2(option2.getText().trim());
+            question.setOption3(option3.getText().trim());
+            question.setOption4(option4.getText().trim());
+
+            Toggle obj2=radioGroup.getSelectedToggle();
+            String ans=null;
+            if(obj2==option1radio){
+                ans=option1.getText().trim();
+            }
+            else if(obj2==option2radio){
+                ans=option2.getText().trim();
+            }
+            else if(obj2==option3radio){
+                ans=option3.getText().trim();
+            }
+            else
+            {
+                ans=option4.getText().trim();
+            }
+
+            question.setAnswer(ans);
+            question.setQuestion(this.question.getText().trim());
+
+            this.question.clear();
+            option1.clear();
+            option2.clear();
+            option3.clear();option4.clear();
+
+            questions.add(question);
+
+            System.out.println("Save Question......");
+            System.out.println(questions);
+            System.out.println(quiz);
+
 
         }
     }
     @FXML
     private void submitQuiz(ActionEvent actionEvent) {
+
     }
 }

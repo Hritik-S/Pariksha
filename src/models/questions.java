@@ -1,9 +1,6 @@
 package models;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class questions {
     private Quiz quiz;
@@ -17,6 +14,7 @@ public class questions {
 
     public static class metaData{
         public static final String TABLE_NAME="questions";
+        public static final String QUESTION="question";
         public static final String OPTION1="option1";
         public static final String OPTION2="option2";
         public static final String OPTION3="option3";
@@ -103,8 +101,7 @@ public class questions {
     }
 
     public static void createTable() throws ClassNotFoundException, SQLException {
-        String raw="CREATE TABLE %s ( id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR(1000),%s VARCHAR(500),%s VARCHAR(500),%s VARCHAR(500),%s VARCHAR(500) ,%s VARCHAR(500)" +
-                "                      %s INTEGER , FOREIGN KEY (%s) REFERENCES %s(%s))";
+        String raw="CREATE TABLE %s ( id INTEGER PRIMARY KEY AUTOINCREMENT, question VARCHAR(1000),%s VARCHAR(500),%s VARCHAR(500),%s VARCHAR(500),%s VARCHAR(500) ,%s VARCHAR(500) , %s INTEGER , FOREIGN KEY (%s) REFERENCES %s(%s))";
         String query=String.format(raw,metaData.TABLE_NAME,metaData.OPTION1,metaData.OPTION2,metaData.OPTION3,metaData.OPTION4,
                 metaData.ANSWER,metaData.QUIZ_ID,metaData.QUIZ_ID,Quiz.metaData.TABLE_NAME,Quiz.metaData.QUIZ_ID);
 
@@ -114,6 +111,28 @@ public class questions {
         PreparedStatement ps= connection.prepareStatement(query);
         boolean b=ps.execute();
         System.out.println(b);
+
+    }
+
+    public void save() throws ClassNotFoundException, SQLException {
+        String raw="INSERT INTO %s (%s,%s,%s,%s,%s,%s,%s) VALUES (?,?,?,?,?,?,?) ";
+        String query=String.format(raw, metaData.TABLE_NAME,metaData.QUESTION,metaData.OPTION1,metaData.OPTION2,metaData.OPTION3,metaData.OPTION4,metaData.ANSWER,metaData.QUIZ_ID);
+        String connectionUrl="jdbc:sqlite:Quiz.db";
+        Class.forName("org.sqlite.JDBC");
+        Connection connection= DriverManager.getConnection(connectionUrl);
+        PreparedStatement ps= connection.prepareStatement(query );
+        ps.setString(1,this.question);
+        ps.setString(2,this.option1);
+        ps.setString(3,this.option2);
+        ps.setString(4,this.option3);
+        ps.setString(5,this.option4);
+        ps.setString(6,this.answer);
+        ps.setInt(7,this.quiz.getQuizId());
+
+        int i=ps.executeUpdate();
+        ResultSet keys=ps.getGeneratedKeys();
+        System.out.println("Updated rows ---->" + i);
+        connection.close();
 
     }
 }
