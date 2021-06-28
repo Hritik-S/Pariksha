@@ -17,6 +17,7 @@ import org.controlsfx.control.Notifications;
 
 import javax.management.Notification;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 
 public class addQuizFXMLController implements Initializable {
@@ -82,6 +83,12 @@ public class addQuizFXMLController implements Initializable {
     }
 
     private boolean validateFields(){
+
+        if(quiz==null){
+            Notifications.create().darkStyle().title("Quiz").text("Enter Quiz Title and press OK").position(Pos.CENTER).showError();
+            return false;
+        }
+
         String qu=this.question.getText();
         String op1=this.option1.getText();
         String op2=this.option2.getText();
@@ -107,6 +114,10 @@ public class addQuizFXMLController implements Initializable {
     }
     @FXML
     private void addNextQuestion(ActionEvent actionEvent) {
+        addQuestion();
+    }
+
+    private boolean addQuestion(){
         boolean valid=validateFields();
         models.questions question=new questions();
         if(valid){
@@ -143,6 +154,7 @@ public class addQuizFXMLController implements Initializable {
             option3.clear();option4.clear();
 
             questions.add(question);
+            question.setQuiz(quiz);
 
             System.out.println("Save Question......");
             System.out.println(questions);
@@ -150,9 +162,22 @@ public class addQuizFXMLController implements Initializable {
 
 
         }
+        return valid;
     }
+
     @FXML
-    private void submitQuiz(ActionEvent actionEvent) {
+    private void submitQuiz(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        boolean flag=addQuestion();
+        if(flag){
+            flag= quiz.save(questions);
+            if(flag){
+                Notifications.create().darkStyle().text("Quiz Successfully saved").position(Pos.CENTER).showInformation();
+            }
+            else{
+                //error
+                Notifications.create().darkStyle().title("FAILED").text("Can't Saved Quiz....check all entries carefully").position(Pos.CENTER).showError();
+            }
+        }
 
     }
 }

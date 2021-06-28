@@ -1,6 +1,7 @@
 package models;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Quiz {
     private Integer quizId;
@@ -60,19 +61,36 @@ public class Quiz {
         String raw="Insert into %s (%s) values (?) ";
         String query=String.format(raw,metaData.TABLE_NAME,metaData.TITLE);
         String connectionUrl="jdbc:sqlite:Quiz.db";
-        Class.forName("org.sqlite.JDBC");
-        Connection connection= DriverManager.getConnection(connectionUrl);
-        PreparedStatement ps= connection.prepareStatement(query , Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1,this.title);
+        try {
+            Class.forName("org.sqlite.JDBC");
+            try (Connection connection = DriverManager.getConnection(connectionUrl)) {
+                PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, this.title);
 
-        int i=ps.executeUpdate();
-        ResultSet keys=ps.getGeneratedKeys();
-        if(keys.next()){
-            connection.close();
-            return keys.getInt(1);
+                int i = ps.executeUpdate();
+                ResultSet keys = ps.getGeneratedKeys();
+                if (keys.next()) {
+
+                    return keys.getInt(1);
+                }
+            }
         }
-        connection.close();
+        catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+
         return -1;
 
+    }
+    public boolean save(ArrayList<questions> questions) throws SQLException, ClassNotFoundException {
+
+        boolean flag=true;
+        this.quizId=this.save();
+        for(models.questions q:questions)
+            flag=flag && q.save();
+
+
+        return flag;
     }
 }

@@ -114,25 +114,34 @@ public class questions {
 
     }
 
-    public void save() throws ClassNotFoundException, SQLException {
+    public boolean save() throws ClassNotFoundException, SQLException {
+        boolean flag=false;
         String raw="INSERT INTO %s (%s,%s,%s,%s,%s,%s,%s) VALUES (?,?,?,?,?,?,?) ";
         String query=String.format(raw, metaData.TABLE_NAME,metaData.QUESTION,metaData.OPTION1,metaData.OPTION2,metaData.OPTION3,metaData.OPTION4,metaData.ANSWER,metaData.QUIZ_ID);
         String connectionUrl="jdbc:sqlite:Quiz.db";
-        Class.forName("org.sqlite.JDBC");
-        Connection connection= DriverManager.getConnection(connectionUrl);
-        PreparedStatement ps= connection.prepareStatement(query );
-        ps.setString(1,this.question);
-        ps.setString(2,this.option1);
-        ps.setString(3,this.option2);
-        ps.setString(4,this.option3);
-        ps.setString(5,this.option4);
-        ps.setString(6,this.answer);
-        ps.setInt(7,this.quiz.getQuizId());
+        try {
+            Class.forName("org.sqlite.JDBC");
 
-        int i=ps.executeUpdate();
-        ResultSet keys=ps.getGeneratedKeys();
-        System.out.println("Updated rows ---->" + i);
-        connection.close();
+            try (Connection connection = DriverManager.getConnection(connectionUrl)) {
+                PreparedStatement ps = connection.prepareStatement(query);
+                ps.setString(1, this.question);
+                ps.setString(2, this.option1);
+                ps.setString(3, this.option2);
+                ps.setString(4, this.option3);
+                ps.setString(5, this.option4);
+                ps.setString(6, this.answer);
+                ps.setInt(7, this.quiz.getQuizId());
 
+                int i = ps.executeUpdate();
+
+                System.out.println("Updated rows ---->" + i);
+            }
+            flag=true;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return flag;
     }
 }
