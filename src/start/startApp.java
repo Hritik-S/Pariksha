@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import models.Quiz;
+import models.Students;
 import models.questions;
 
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ public class startApp extends Application {
     private void createTables() throws SQLException, ClassNotFoundException {
         Quiz.createTable();
         questions.createTable();
+        Students.createTable();
 
     }
 }
